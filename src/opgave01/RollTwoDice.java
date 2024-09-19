@@ -1,4 +1,4 @@
-package examples;
+package opgave01;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -47,7 +47,7 @@ public class RollTwoDice {
         scanner.close();
     }
 
-    private static int[] rollDice() {
+    public static int[] rollDice() {
         int[] diceArray = new int[2];
 
         diceArray[0] = (int) (Math.random() * 6 + 1);
