@@ -7,7 +7,7 @@ import static opgave01.RollTwoDice.rollDice;
 public class Craps {
 
     public static int SumOfDice = 0;
-    public static int point = 0;
+    public static int newPoint = 0;
 
     //Main method
     public static void main(String[] args) {
