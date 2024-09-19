@@ -14,7 +14,7 @@ public class Craps {
 
     //Main method
     public static void main(String[] args) {
-
+        playTwoDice();
 
         playTwoDice();
         playCraps();
