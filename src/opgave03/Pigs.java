@@ -1,6 +1,8 @@
 package opgave03;
 
 import java.util.Scanner;
+
+import static opgave01.RollTwoDice.rollDice;
 import static opgave03.Player.*;
 
 public class Pigs {
@@ -16,34 +18,37 @@ public class Pigs {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Velkommen til spillet, PIGS.");
-        printRules();
-        System.out.println();
 
         System.out.println("Hvad vil I gerne spille til? Vælg et positivt heltal.");
         int winCondition = scanner.nextInt();
+
+        printRules(winCondition);
+        System.out.println();
+
         playPigs(winCondition);
 
         System.out.println();
         System.out.println("Tak for at spille, PIGS.");
     }
 
-    private static void printRules() {
+    private static void printRules(int winCondition) {
         System.out.println("=====================================================");
         System.out.println("Regler for PIGS");
         System.out.println("To spillere.");
-        System.out.println("Første spiller kaster en terning, indtil han slår 1 " +
+        System.out.println("Første spiller kaster to terninger, indtil han slår en 1'er med en af terningerne " +
                            "eller beslutter sig for at stoppe.");
-        System.out.println("Hvis han slår en 1'er, får han ingen point i denne runde.");
+        System.out.println("Hvis han slår en 1'er med én af terningerne, får han ingen point i denne runde.");
+        System.out.println("Hvis han slår en 1'er med begge terninger, mistes alle point opnået i tidligere runder.");
         System.out.println("Hvis han beslutter sig for at stoppe inden han slår en 1'er, " +
                            "lægges summen af alle hans kast sammen med hans samlede antal point.");
         System.out.println("Derefter går turen videre til den anden spiller.");
-        System.out.println("Den første spiller der når 100 point vinder.");
+        System.out.println("Den første spiller der når " + winCondition + " point vinder.");
         System.out.println("=====================================================");
     }
 
     private static void playPigs(int winCondition) {
         while(totalPointsPlayerOne < winCondition && totalPointsPlayerTwo < winCondition) {
-            printPersonInTurn();
+            printPlayerInTurn();
 
             playTurn(winCondition);
 
@@ -78,32 +83,53 @@ public class Pigs {
         System.out.println("Vil du starte med at kaste? ('ja'/'nej')");
         String answer = scanner.nextLine();
         while(!answer.equals("nej")) {
-            int face = rollDie();
-            increaseRollCounterForPlayer();
-            if(face == 1) {
-                System.out.println("Du slog en 1'er på dit kast - " +
-                                   "du får derfor ingen point i denne runde og må ikke slå igen.");
+            int[] faces = rollDice();
+            int faceOne = faces[0];
+            int faceTwo = faces[1];
+            int sumOfFaces = faceOne + faceTwo;
+
+            increaseRollCounterForPlayerInTurn();
+
+            if(sumOfFaces == 2) {
+                System.out.println("Du slog en 1'er på begge terninger i dit kast - " +
+                                   "du mister derfor alle dine point fra tidligere runder og må ikke slå igen.");
+                resetTheTotalPointsForPlayerInTurn();
+                break;
+            }
+
+            else if (faceOne == 1 || faceTwo == 1) {
+                System.out.println("Du slog en 1'er på en af terningerne i dit kast - " +
+                        "du mister derfor alle dine point fra denne runde og må ikke slå igen.");
                 totalPointsThisRound = 0;
                 break;
             }
 
-            totalPointsThisRound += face;
+            totalPointsThisRound += sumOfFaces;
 
-            if(isWinner(totalPointsThisRound, winCondition)) {
+            if(isPlayerInTurnWinner(totalPointsThisRound, winCondition)) {
                 break;
             }
 
-            System.out.println("Du slog en " + face + " på dit første kast og får derfor " + face + " point." +
+            System.out.println("Du slog en " + faceOne+ " & " + faceTwo + " på dit kast og får derfor " + sumOfFaces + " point." +
                                " Du har nu " + totalPointsThisRound + " denne runde." );
             System.out.println("Vil du fortsætte? ('ja'/'nej')");
             answer = scanner.nextLine();
         }
         updateStatistics(totalPointsThisRound);
-        increaseTurnCounterForPlayer();
+        increaseTurnCounterForPlayerInTurn();
 
     }
 
-    private static boolean isWinner(int totalPointsThisRound, int winCondition) {
+    private static void resetTheTotalPointsForPlayerInTurn() {
+        if(playerInTurn == PLAYER_ONE) {
+            totalPointsPlayerOne = 0;
+        }
+        else {
+            totalPointsPlayerTwo = 0;
+        }
+    }
+
+    private static boolean isPlayerInTurnWinner(int totalPointsThisRound, int winCondition) {
         if(playerInTurn == PLAYER_ONE && totalPointsThisRound + totalPointsPlayerOne >= winCondition) {
             return true;
         }
@@ -115,7 +141,7 @@ public class Pigs {
         }
     }
 
-    private static void increaseTurnCounterForPlayer() {
+    private static void increaseTurnCounterForPlayerInTurn() {
         if(playerInTurn == PLAYER_ONE) {
             numberOfTurnsPlayerOne++;
         }
@@ -124,17 +150,13 @@ public class Pigs {
         }
     }
 
-    private static void increaseRollCounterForPlayer() {
+    private static void increaseRollCounterForPlayerInTurn() {
         if(playerInTurn == PLAYER_ONE) {
             rollCountPlayerOne++;
         }
         else {
             rollCountPlayerTwo++;
         }
-    }
-
-    private static int rollDie() {
-        return (int) (Math.random() * 6 + 1);
     }
 
     private static void updateStatistics(int point) {
@@ -146,7 +168,7 @@ public class Pigs {
         }
     }
 
-    private static void printPersonInTurn() {
+    private static void printPlayerInTurn() {
         if (playerInTurn == PLAYER_ONE) {
             System.out.printf("\nDet er SPILLER 1's tur.\n");
         }
