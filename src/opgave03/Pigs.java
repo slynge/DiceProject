@@ -43,18 +43,28 @@ public class Pigs {
 
     private static void playPigs(int winCondition) {
         while(totalPointsPlayerOne < winCondition && totalPointsPlayerTwo < winCondition) {
-            displayPersonInTurn();
+            printPersonInTurn();
 
-            playTurn();
+            playTurn(winCondition);
 
             printStandingsForEachTurn();
         }
+        printWinnerForTheGame();
         printStatisticsForTheGame();
 
     }
 
-    private static void playTurn() {
-        doRolls();
+    private static void printWinnerForTheGame() {
+        if(totalPointsPlayerOne > totalPointsPlayerTwo) {
+            System.out.println("SPILLER 1 vandt.");
+        }
+        else {
+            System.out.println("SPILLER 2 vandt.");
+        }
+    }
+
+    private static void playTurn(int winCondition) {
+        doRolls(winCondition);
         switchPlayerInTurn();
     }
 
@@ -62,7 +72,7 @@ public class Pigs {
         playerInTurn = (playerInTurn == PLAYER_ONE) ? PLAYER_TWO : PLAYER_ONE;
     }
 
-    private static void doRolls() {
+    private static void doRolls(int winCondition) {
         int totalPointsThisRound = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.println("Vil du starte med at kaste? ('ja'/'nej')");
@@ -78,6 +88,11 @@ public class Pigs {
             }
 
             totalPointsThisRound += face;
+
+            if(isWinner(totalPointsThisRound, winCondition)) {
+                break;
+            }
+
             System.out.println("Du slog en " + face + " på dit første kast og får derfor " + face + " point." +
                                " Du har nu " + totalPointsThisRound + " denne runde." );
             System.out.println("Vil du fortsætte? ('ja'/'nej')");
@@ -86,6 +101,18 @@ public class Pigs {
         updateStatistics(totalPointsThisRound);
         increaseTurnCounterForPlayer();
 
+    }
+
+    private static boolean isWinner(int totalPointsThisRound, int winCondition) {
+        if(playerInTurn == PLAYER_ONE && totalPointsThisRound + totalPointsPlayerOne >= winCondition) {
+            return true;
+        }
+        else if(playerInTurn == PLAYER_TWO && totalPointsThisRound + totalPointsPlayerTwo >= winCondition) {
+                return true;
+        }
+        else {
+            return false;
+        }
     }
 
     private static void increaseTurnCounterForPlayer() {
@@ -119,26 +146,27 @@ public class Pigs {
         }
     }
 
-    private static void displayPersonInTurn() {
+    private static void printPersonInTurn() {
         if (playerInTurn == PLAYER_ONE) {
             System.out.printf("\nDet er SPILLER 1's tur.\n");
-        } else {
+        }
+        else {
             System.out.printf("\nDet er SPILLER 2's tur.\n");
         }
     }
 
     private static void printStandingsForEachTurn() {
-        System.out.println("\nStandings after the turn:");
+        System.out.println("\nStillingen efter turen:");
         System.out.println("-------");
         System.out.printf("%17s %4d\n", "Antal point for SPILLER 1:", totalPointsPlayerOne);
         System.out.printf("%17s %4d\n", "Antal point for SPILLER 2:", totalPointsPlayerTwo);
     }
 
     private static void printStatisticsForTheGame() {
-        System.out.println("\nStatistics for the game:");
+        System.out.println("\nStatistikker for spillet:");
         System.out.println("-------");
-        System.out.printf("%17s %4d\n", "Gennemsnit af kast SPILLER 1 har lavet:", rollCountPlayerOne/numberOfTurnsPlayerOne);
-        System.out.printf("%17s %4d\n", "Gennemsnit af kast SPILLER 1 har lavet:", rollCountPlayerTwo/numberOfTurnsPlayerTwo);
+        System.out.printf("%17s %4f\n", "Gennemsnit af kast SPILLER 1 har lavet:", (double) rollCountPlayerOne/numberOfTurnsPlayerOne);
+        System.out.printf("%17s %4f\n", "Gennemsnit af kast SPILLER 2 har lavet:", (double) rollCountPlayerTwo/numberOfTurnsPlayerTwo);
     }
 
 }
