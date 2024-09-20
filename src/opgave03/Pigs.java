@@ -8,13 +8,20 @@ public class Pigs {
     private static Player playerInTurn = PLAYER_ONE;
     private static int totalPointsPlayerOne = 0;
     private static int totalPointsPlayerTwo = 0;
+    private static int rollCountPlayerOne = 0;
+    private static int rollCountPlayerTwo = 0;
+    private static int numberOfTurnsPlayerOne = 0;
+    private static int numberOfTurnsPlayerTwo = 0;
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("Velkommen til spillet, PIGS.");
         printRules();
         System.out.println();
 
-        playPigs(100);
+        System.out.println("Hvad vil I gerne spille til? Vælg et positivt heltal.");
+        int winCondition = scanner.nextInt();
+        playPigs(winCondition);
 
         System.out.println();
         System.out.println("Tak for at spille, PIGS.");
@@ -40,8 +47,9 @@ public class Pigs {
 
             playTurn();
 
-            printStatisticsForEachTurn();
+            printStandingsForEachTurn();
         }
+        printStatisticsForTheGame();
 
     }
 
@@ -61,26 +69,48 @@ public class Pigs {
         String answer = scanner.nextLine();
         while(!answer.equals("nej")) {
             int face = rollDie();
+            increaseRollCounterForPlayer();
             if(face == 1) {
                 System.out.println("Du slog en 1'er på dit kast - " +
                                    "du får derfor ingen point i denne runde og må ikke slå igen.");
                 totalPointsThisRound = 0;
                 break;
             }
+
             totalPointsThisRound += face;
             System.out.println("Du slog en " + face + " på dit første kast og får derfor " + face + " point." +
                                " Du har nu " + totalPointsThisRound + " denne runde." );
             System.out.println("Vil du fortsætte? ('ja'/'nej')");
             answer = scanner.nextLine();
         }
-        updateStatistics(playerInTurn, totalPointsThisRound);
+        updateStatistics(totalPointsThisRound);
+        increaseTurnCounterForPlayer();
+
+    }
+
+    private static void increaseTurnCounterForPlayer() {
+        if(playerInTurn == PLAYER_ONE) {
+            numberOfTurnsPlayerOne++;
+        }
+        else {
+            numberOfTurnsPlayerTwo++;
+        }
+    }
+
+    private static void increaseRollCounterForPlayer() {
+        if(playerInTurn == PLAYER_ONE) {
+            rollCountPlayerOne++;
+        }
+        else {
+            rollCountPlayerTwo++;
+        }
     }
 
     private static int rollDie() {
         return (int) (Math.random() * 6 + 1);
     }
 
-    private static void updateStatistics(Player playerInTurn, int point) {
+    private static void updateStatistics(int point) {
         if(playerInTurn == PLAYER_ONE) {
             totalPointsPlayerOne += point;
         }
@@ -97,11 +127,18 @@ public class Pigs {
         }
     }
 
-    private static void printStatisticsForEachTurn() {
-        System.out.println("\nResults:");
+    private static void printStandingsForEachTurn() {
+        System.out.println("\nStandings after the turn:");
         System.out.println("-------");
         System.out.printf("%17s %4d\n", "Antal point for SPILLER 1:", totalPointsPlayerOne);
         System.out.printf("%17s %4d\n", "Antal point for SPILLER 2:", totalPointsPlayerTwo);
+    }
+
+    private static void printStatisticsForTheGame() {
+        System.out.println("\nStatistics for the game:");
+        System.out.println("-------");
+        System.out.printf("%17s %4d\n", "Gennemsnit af kast SPILLER 1 har lavet:", rollCountPlayerOne/numberOfTurnsPlayerOne);
+        System.out.printf("%17s %4d\n", "Gennemsnit af kast SPILLER 1 har lavet:", rollCountPlayerTwo/numberOfTurnsPlayerTwo);
     }
 
 }
