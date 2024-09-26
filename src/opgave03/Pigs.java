@@ -136,7 +136,7 @@ public class Pigs {
             answer = scanner.nextLine();  // Ask the player if they want to continue rolling
         }
 
-        updateStatistics(totalPointsThisRound);  // Update the player's total score
+        updatePlayerPoints(totalPointsThisRound);  // Update the player's total score
         increaseTurnCounterForPlayerInTurn();  // Increase the turn count for the player
     }
 
@@ -177,20 +177,14 @@ public class Pigs {
      * @return True if the player wins, otherwise false.
      */
     private static boolean isPlayerInTurnWinner(int totalPointsThisRound, int winCondition) {
-        if (playerInTurn == PLAYER_ONE && totalPointsThisRound + totalPointsPlayerOne >= winCondition) {
-            return true;
-        } else if (playerInTurn == PLAYER_TWO && totalPointsThisRound + totalPointsPlayerTwo >= winCondition) {
-            return true;
-        } else {
-            return false;
-        }
+            return (playerInTurn == PLAYER_ONE && totalPointsThisRound + totalPointsPlayerOne >= winCondition) || (playerInTurn == PLAYER_TWO && totalPointsThisRound + totalPointsPlayerTwo >= winCondition);
     }
 
     /**
      * Updates the total points for the player in turn after their round.
      * @param points The points earned this round.
      */
-    private static void updateStatistics(int points) {
+    private static void updatePlayerPoints(int points) {
         if (playerInTurn == PLAYER_ONE) {
             totalPointsPlayerOne += points;
         } else {

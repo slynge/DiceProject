@@ -120,6 +120,7 @@ public class Craps {
             playCraps();  // Restart the game if the player says "ja"
         }
         // If the player says "nej", the program exits automatically
+        input.close();
     }
 
 
